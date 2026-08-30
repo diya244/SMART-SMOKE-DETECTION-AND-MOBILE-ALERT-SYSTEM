@@ -4,7 +4,7 @@ kegunaan premis perniagaan. kami uga menggunakan Buzzer, Traffic Light dan Oled 
 Kami juga telah membangunkan Website bagi monitor keadaan semasa di premis. Kami menggunakan Telegram untuk memberi 
 notifikasi kepada user jika kepekatan asap serta suhu menjdi tinggi.
 
-KETERANGAN PROJEK
+KETERANGAN PROJEK :
 MQ-2 berfungsi untuk mengesan kepekatan asap, DHT-11 pula mengesan suhu, Buzzer akan berbunyi mengikut masa yang 
 ditetapkan apabila suhu dan kepekatan asap menjadi tinggi, Trafic Light akan menyala mengikut warna (hijau - safe, 
 kuning - warning, merah - danger), dan Oled untuk memaparkan status asap dan suhu.
