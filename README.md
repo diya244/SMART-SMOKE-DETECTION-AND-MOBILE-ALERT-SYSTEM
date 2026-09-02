@@ -18,4 +18,4 @@ DHT-11 mengesan suhu yang tinggi, Oled akan paparkan "Danger" dan Traffic Light 
 Buzzer akan berbunyi bagi menandakan status bahaya.
 
 # STATUS PROJEK :
-Belum siap sepenuhnya
+Belum siap sepenuhnya (website belum berfungsi sepenuhnya)
