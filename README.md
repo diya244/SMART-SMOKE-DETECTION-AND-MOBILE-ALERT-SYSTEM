@@ -1,4 +1,4 @@
-# PENERANGAN PROJEK
+# PENERANGAN PROJEK :
 Kami membina satu project yang boleh mengesan asap menggunakan MQ-2 serta suhu menggunakan DHT-11 bagi premis 
 kegunaan premis perniagaan. kami uga menggunakan Buzzer, Traffic Light dan Oled sebagai komponen tambahan.
 Kami juga telah membangunkan Website bagi monitor keadaan semasa di premis. Kami menggunakan Telegram untuk memberi 
