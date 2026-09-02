@@ -21,104 +21,54 @@
 
 #include <DHT.h>
 
-
-
 // ================= PROJECT =================
-
 #define AP_NAME "ESP32-SMOKE-SETUP"
 
-
-
 // ================= TELEGRAM =================
-
 #define BOT_TOKEN "8704392963:AAEgWptbTvmu_7yQy7EMWAhfdOxwU0-SR44"
-
 #define CHAT_ID "816927248"
 
-
-
 WiFiClientSecure telegramClient;
-
 
 UniversalTelegramBot bot(
   BOT_TOKEN,
   telegramClient
 );
 
-
-
 // Anti spam
-
 bool telegramAlertSent = false;
-
 unsigned long lastTelegram = 0;
-
 const unsigned long TELEGRAM_COOLDOWN = 60000;
 
-
-
-
 // ================= WEB SERVER =================
-
 WebServer server(80);
-
-
-
 
 // ================= PIN CONFIGURATION =================
 
-
 // MQ2 GAS SENSOR
-
 #define MQ2_PIN 34
 
-
-
 // DHT11
-
 #define DHT_PIN 15
-
 #define DHT_TYPE DHT11
 
-
-
 // BUZZER
-
 #define BUZZER_PIN 14
 
-
-
 // LED
-
 #define GREEN_LED_PIN 25
-
 #define YELLOW_LED_PIN 26
-
 #define RED_LED_PIN 27
 
-
-
 // OLED
-
 #define OLED_SDA 21
-
 #define OLED_SCL 22
 
-
-
-
 // ================= OLED =================
-
-
 #define SCREEN_WIDTH 128
-
 #define SCREEN_HEIGHT 64
-
 #define OLED_RESET -1
-
 #define OLED_ADDRESS 0x3C
-
-
 
 Adafruit_SSD1306 display(
   SCREEN_WIDTH,
@@ -127,274 +77,139 @@ Adafruit_SSD1306 display(
   OLED_RESET
 );
 
-
-
-
 // ================= DHT =================
-
-
 DHT dht(
   DHT_PIN,
   DHT_TYPE
 );
 
-
-
-
-
 // ================= THRESHOLD =================
 
-
 // Gas level
-
 #define SMOKE_WARNING 300
-
 #define SMOKE_DANGER 800
 
-
-
 // Temperature
-
 #define TEMP_WARNING 35.0
-
 #define TEMP_DANGER 40.0
 
-
-
-
-
 // ================= SENSOR VARIABLE =================
-
-
 int smokeValue = 0;
-
-
 float temperature = 0.0;
-
-
 float humidity = 0.0;
-
-
 bool dhtOK = false;
 
-
-
-
-
 // ================= SYSTEM STATUS =================
-
-
 enum SystemStatus
 {
-
   NORMAL,
-
   WARNING,
-
   DANGER
-
 };
-
-
-
 SystemStatus currentStatus = NORMAL;
 
-
-
-
-
 // ================= BUZZER =================
-
-
 #define BUZZER_ON LOW
-
 #define BUZZER_OFF HIGH
-
-
-
 String buzzerStatus = "OFF";
 
-
-
-
-
 // ================= WIFI =================
-
-
 bool wifiConnected = false;
 // =====================================================
 // FULL CODE PART 2/3
 // FUNCTION SYSTEM
 // =====================================================
 
-
-
 // ================= TELEGRAM FUNCTION =================
-
-
 void sendTelegramAlert()
 {
-
   String message = "";
-
   message += "🚨 SMART SMOKE ALERT!\n\n";
-
-
   if(smokeValue >= SMOKE_DANGER)
   {
     message += "🔥 GAS / SMOKE LEVEL HIGH\n";
   }
-
-
   if(temperature >= TEMP_DANGER)
   {
     message += "🌡 TEMPERATURE HIGH\n";
   }
-
-
-
   message += "\nSmoke Level: ";
   message += smokeValue;
-
-
   message += "\nTemperature: ";
   message += temperature;
   message += " °C";
-
-
   message += "\nHumidity: ";
   message += humidity;
   message += " %";
-
-
   message += "\n\nStatus: DANGER";
-
-
-
   bot.sendMessage(
     CHAT_ID,
     message,
     ""
   );
-
 }
 
-
-
-
 // ================= READ SENSOR =================
-
-
 void readSensor()
 {
-
-
   // MQ2
-
   smokeValue = analogRead(
     MQ2_PIN
   );
-
-
-
+  
   // DHT11
-
   float t = dht.readTemperature();
-
   float h = dht.readHumidity();
-
-
-
   if(!isnan(t))
   {
     temperature = t;
   }
-
-
-
   if(!isnan(h))
   {
     humidity = h;
-
     dhtOK = true;
   }
-
   else
   {
     dhtOK = false;
   }
-
-
-
 }
 
-
-
-
-
 // ================= STATUS DETECTION =================
-
-
 void determineStatus()
 {
-
-
   SystemStatus oldStatus = currentStatus;
-
-
-
   if(
     smokeValue >= SMOKE_DANGER ||
     temperature >= TEMP_DANGER
   )
   {
-
     currentStatus = DANGER;
-
   }
-
-
   else if(
     smokeValue >= SMOKE_WARNING ||
     temperature >= TEMP_WARNING
   )
   {
-
     currentStatus = WARNING;
-
   }
-
-
   else
   {
-
     currentStatus = NORMAL;
-
   }
 
-
-
-
-
   // ================= TELEGRAM TRIGGER =================
-
-
   if(
     currentStatus == DANGER &&
     oldStatus != DANGER
   )
   {
-
-
     if(
       millis() - lastTelegram > TELEGRAM_COOLDOWN
     )
     {
-
       sendTelegramAlert();
-
       lastTelegram = millis();
-
     }
   }
 }
